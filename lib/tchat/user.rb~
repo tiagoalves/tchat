@@ -1,0 +1,16 @@
+module TChat
+  
+  attr_accessor :name, :email, :password
+
+  class User 
+
+    def initialize(name, email, password)
+      @name = name
+      @email = email
+      @password = password
+    end
+
+  end #class User
+
+end #module TChat
+

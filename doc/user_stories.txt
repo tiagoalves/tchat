@@ -1,0 +1,61 @@
+Server
+------
+- When a registration request is received, a new User object shall be created with the received information
+  - The user object must be persisted
+- When an invite command is received, a new Invitation object shall be created.
+  - It should be associated with both the inviting and invited user
+  - It must have the initial status of :pending
+- When an invitation response is received it must be persisted to the invitation in question
+  - If the response is "ignore", the invitation object's status field is set to :ignored
+  - If the response is "accept", the invitation object's status field is set to :accepted_not_notified
+  - The server is then responsible for notifying the inviter of the acceptance of his request either right now or when the inviter signs in the next time. When that successfully happens, the invitation object's status field is set to :accepted.
+- When a normal one-to-one chat message is received, the target person has to be matched against the sending party's contact list.
+  - The message shall only be delivered if the target is an accepted contact of the sending party.
+- When a chat add user request is received, a new chat session object must be created or an existing one must be updated
+  - The chat session object must be added to transient memory only
+  - The chat session object must have an identifier which is a UUID
+
+
+
+
+Client
+------
+- As a user, when inside the running application, I can quit the application.
+  - I must use the command "/quit"
+- As a user that has not signed in, I should be able to register for an account.
+  - I must use the command "/register"
+  - I should have the possibility to provide the following information:
+    - e-mail address, password, nickname
+- As a user, after I have created an account, I should be able to sign in with my e-mail address and password.
+  - I must use the command "/signin" and get a request to provide my email and password
+  - Alternatively, I can use the command "/signin email@example.com" and get a request to provide my password
+- As a signed in user, I should be able to request another registered user to let me add him to my contact list
+  - I must use the command "/invite person@example.com"
+- As a signed in user, I should be able to be notified about accepted invitations
+- As a signed in user, I should be able to be notified about invitation requests
+- As a signed in user, I should be able to list my invitation requests
+  - I must use the command "/listinvitations"
+  - The invitation request list should be numbered and present the nickname and e-mail address of the inviter
+- As a signed in user, I should be able to respond to invitation requests
+  - I must use the command "/invitation <number>" where <number> is the /listinvitations number
+- As a signed in user, I should be able to list my contacts
+  - I must use the command "/listcontacts"
+- As a signed in user, I should be able to start a conversation with a user from my contactlist
+  - I must use the command "/chat person@example.com"
+  - This command does send any inital or setup message to the server as such a one-to-one conversation is stateless.
+- As a signed in user that has started a chat session with a contact, I can add more contacts to the active chat session
+  - I must use the command "/chatadd otherperson@example.com"
+  - This command must create a conversation session on the server or alter an existing session
+- As a signed in user that has started a chat session with a contact, I can end this very same chat session
+  - I must use the command "/bye"
+- As a signed in user that has started a conversation, I can send chat messages to my contact(s)
+  - I must just write the text that I want to send without any control characters
+- As a signed in user, I can list my active chat sessions
+  - I must use the command "/chatslist"
+  - I will get a listing of my active chats with an associated number and the enumeration of all the contacts in each chat session
+- As a signed in user, I can change my active chat session 
+  - I must use the command "/chatswitch <number>" where <number> is the number associated to a chat session in the "/listchats" command
+
+
+
+
