@@ -1,9 +1,9 @@
 module TChat
   
-  attr_accessor :inviter, :invitee  #users
-  attr_accessor :status
-
   class Invitation
+
+    attr_accessor :inviter, :invitee
+    attr_writer :status
 
     def initialize(inviter, invitee)
       @inviter = inviter

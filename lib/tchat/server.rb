@@ -1,44 +1,84 @@
 require 'socket'
-require './client_connection.rb'
+require 'lib/tchat/users_manager.rb'
+require 'lib/tchat/command/identification_command_factory.rb'
 
 module TChat
 
+  # :title:The class responsible for accepting new user connections
+  # = Name
+  # 
+  # = Synopsis
+  # 
+  # = Description
+  #
+  # = Todo
+  # == Upcoming Features
+  # 0. Nothing yet.
+  # == Known Issues
+  # 0. Nothing yet.
+  # = References
+  # 0. <i>I made it up as I went along.</i>
+  # = License
+  # This code is provided under the terms of the {MIT License.}[http://www.opensource.org/licenses/mit-license.php]
+  #
+  #--
+  # This code is the proprietary intellectual property of its authors.  It is not intended for publication.
+  #++
+  # = Authors
+  # Tiago Alves
+  #
+  
   class Server
 
-    @users
+    attr_reader :users_manager, :port
 
-    def initialize(port)
+    def initialize(port, users_manager)
       @port = port
+      @users_manager = users_manager
+
+      @factory = TChat::Command::IdentificationCommandFactory.new(@users_manager)
     end
 
     def start
       server = TCPServer.open(@port)
 
+      puts "Starting to listen for connections on port " + @port.to_s
+
       loop {
 
-        Thread.start(server.accept) do |client|
-          client_line = client.gets
-          client_args = client_line.split(' ')
-
-          if (client_args.length < 3) {
-            client.puts "Invalid sigin information provided..."
-            client.close
-            break
-          }
-
-          arg_command = client_args[0]
-          arg_email = client_args[1]
-          arg_password = client_args[2]
-
-          client.puts "echo... " + client_line 
-	        client.puts "Closing the connection. Bye!"
-          client.close
-        end
+        puts "Waiting for the next connections..."
+        socket = server.accept
+        identify_client socket
 
       }
-    end
 
-  end #class Server
+    end # start
 
-end #module TChat
+
+    private
+
+    # At connection time we don't know yet what kind of client has arrived.
+    # Before we hand the connection socket out to a certain handler, we
+    # will receive and parse the first command
+    def identify_client(socket)
+
+      Thread.start(socket) do |socket|
+        begin
+
+          command = @factory.create_command socket.gets, socket
+          command.execute unless command.nil?
+          # At this point the user connection has been
+          # handed to the respective handler or has been
+          # dropped. Either way, it is no longer our business.
+
+        rescue # Catch em all "à labrego"
+          puts $!, $@
+        end
+      end # Thread.start
+
+    end # handle_connection
+
+  end # class Server
+
+end # module TChat
 
