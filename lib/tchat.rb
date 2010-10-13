@@ -1,4 +1,6 @@
-require 'lib/tchat/application.rb'
 
-application = TChat::Application.new
-application.run
+module TChat 
+
+  autoload :Command,   'lib/tchat/command/command_helper'
+
+end

@@ -5,9 +5,18 @@ module TChat
   module Command
   
     class SigninCommand < Command
+
+      def self.command
+        "signin"
+      end
+
+      def self.description
+        "Authenticates a registered User with the system given an e-mail address and a password"
+      end
+
+
       
       def initialize(args, users_manager, socket)
-        super "signin", "Authenticates a registered User with the system. Email #{args[0]} Password #{args[1]}"
         @email = args[0]
         @password = args[1]
         @users_manager = users_manager

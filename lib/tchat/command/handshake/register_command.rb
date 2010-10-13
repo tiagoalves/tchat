@@ -6,8 +6,15 @@ module TChat
   
     class RegisterCommand < Command
 
+      def self.command
+        "register"
+      end
+
+      def self.description
+        "Registers a new User with the system given an e-mail address and a password"
+      end
+
       def initialize(args, users_manager, socket)
-        super "register", "Registers a new User with the system. Username: #{args[0]} Password: #{args[1]}"
 
         @email = args[0]
         @password = args[1]
